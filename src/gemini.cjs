@@ -13,11 +13,6 @@ const {
   const apiKey = process.env.GEMINI_API_KEY;
   const genAI = new GoogleGenerativeAI(apiKey);
   
-  const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-pro",
-    systemInstruction: "Você será uma IA de geração de prompt para criar imagen para que essa de imagens virarem vídeos animados",
-  });
-  
   const generationConfig = {
     temperature: 1,
     topP: 0.95,
@@ -26,7 +21,15 @@ const {
     responseMimeType: "text/plain",
   };
   
-  async function runGemini() {
+async function runGemini(
+  systemInstruction="Você será uma IA de geração de prompt para criar imagens, para que posteriormente essas imagens virem vídeos animados",
+  prompt="Gere somente um prompt para criar somente alguma imagem relacionada ao ambiente acadêmico de uma faculdade de ciências da Computação"
+) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash",
+    systemInstruction
+  });
+
     const chatSession = model.startChat({
       generationConfig,
    // safetySettings: Adjust safety settings
@@ -35,10 +38,11 @@ const {
       ],
     });
   
-    const result = await chatSession.sendMessage("Gere somente um prompt para criar alguma imagem");
+    const result = await chatSession.sendMessage(prompt);
     const response = result.response.text()
     console.log("Prompt gerado:\n",response)
     return response
   }
+
+  module.exports = {runGemini}
   
-  module.exports = runGemini
