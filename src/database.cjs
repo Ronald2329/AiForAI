@@ -21,7 +21,7 @@ async function insertRecord(record) {
                 height,
                 guidance_scale,
                 num_inference_steps,
-                url
+                url: url[0].url
             }
         ]);
 

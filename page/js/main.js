@@ -30,9 +30,8 @@ async function discover() {
         const slide = document.createElement('div');
         slide.className = `carousel-item ${isActive}`;
         slide.innerHTML = `
-          <img src="${record.url}" class="d-block w-100" alt="Imagem">
+          <img  src="${record.url}" class="d-block w-100" alt="${record.prompt}">
           <div class="carousel-caption d-none d-md-block">
-            <h5>${record.prompt}</h5>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#recordModal" data-record='${JSON.stringify(record)}'>Ver detalhes</button>
           </div>
         `;
@@ -85,4 +84,23 @@ function formateDate(originalDate) {
 
   console.log(brazilianDate);
   return brazilianDate;
+}
+
+async function handleGenerateImage() {
+  const prompt = document.getElementById('promptInput').value;
+
+  if (prompt === '') {
+    alert('O prompt não pode estar vazio.');
+    return;
+  }
+
+  // Envia o prompt para o processo principal (electron.cjs) para gerar a imagem e inserir no banco de dados
+  const result = await window.api.insertRecord(prompt);
+
+  if (result) {
+    alert('Imagem gerada e registro inserido com sucesso!');
+    await discover()
+  } else {
+    alert('Erro ao gerar a imagem ou inserir o registro.');
+  }
 }

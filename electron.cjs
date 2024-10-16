@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu, Notification } = require('electron');
-const path = require('path');
-const {exec} = require('child_process')
+const path = require('node:path');
 const { insertRecord, selectRecords } = require('./src/database.cjs');
+const {runGemini} = require('./src/gemini.cjs')
 
 // Função para criar a janela principal
 function createWindow() {
@@ -22,7 +22,7 @@ function createWindow() {
   // Cria o menu
   const menu = Menu.buildFromTemplate([
     {
-      label: 'Options',
+      label: 'Help',
       submenu: [
         {
           label: 'Modify System Info',
@@ -36,12 +36,14 @@ function createWindow() {
             mainWindow.webContents.send('modify-prompt');
           }
         }
-      ]
+      ],
+      label: 'Documentation'
     }
   ]);
 
   // Define o menu do aplicativo
   Menu.setApplicationMenu(menu);
+
 }
 
 // Manipulador IPC para retornar registros
@@ -70,6 +72,58 @@ ipcMain.handle('get-records', async () => {
       body: 'Erro ao buscar registros: ' + error.message
     }).show();
     console.error('Erro ao buscar registros:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('insert-records', async (event, prompt) => {
+  try {
+    const promptGemini = await runGemini(prompt)
+    const {generateImage} = await import('./src/stableDiffusion.mjs') //Importando o arquivo do tipo modulo em tempo de execução para eliminar o erro!
+
+    // Gera a imagem com o stable diffusion utilizando o prompt fornecido
+    const { returnImage, params } = await generateImage(promptGemini);
+    
+    if (!returnImage) {
+      throw new Error('Erro ao gerar a imagem');
+    }
+
+    // Cria um objeto contendo os dados para inserção
+    const record = {
+      prompt: params.prompt,
+      seed: params.seed,
+      negative_prompt: params.negative_prompt,
+      randomize_seed: params.randomize_seed,
+      width: params.width,
+      height: params.height,
+      guidance_scale: params.guidance_scale,
+      num_inference_steps: params.num_inference_steps,
+      url: returnImage,  // URL da imagem gerada
+    };
+
+    // Insere o registro no banco de dados
+    const result = await insertRecord(record);
+
+    // Notificação de sucesso ou erro
+    if (result) {
+      new Notification({
+        title: 'Sucesso',
+        body: 'Registro inserido com sucesso!',
+      }).show();
+    } else {
+      new Notification({
+        title: 'Erro',
+        body: 'Erro ao inserir registro no banco de dados.',
+      }).show();
+    }
+
+    return result;
+  } catch (error) {
+    new Notification({
+      title: 'Erro',
+      body: 'Erro ao inserir registro: ' + error.message,
+    }).show();
+    console.error('Erro ao inserir registro:', error);
     return null;
   }
 });

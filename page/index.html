@@ -43,7 +43,40 @@
 </div>
 
   <br><br>
-  <div class="text-center"><button  class="btn btn-outline-primary">Criar uma nova imagem</button></div>
+  <div class="text-center">
+    <!-- Botão para abrir o modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageCreationModal">
+      Criar Imagem
+    </button>
+  </div>
+  <!-- Modal de Criação de Imagem -->
+<div class="modal fade" id="imageCreationModal" tabindex="-1" aria-labelledby="imageCreationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageCreationModalLabel">Criar Imagem</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="systemInstruction" class="form-label">Instrução do Sistema</label>
+          <textarea id="systemInstruction" class="form-control" readonly rows="3">Você será uma IA de geração de prompt para criar imagens, para que posteriormente essas imagens virem thumbs de vídeos no youtube</textarea>
+        </div>
+        <div class="mb-3">
+          <label for="promptInput" class="form-label">Prompt</label>
+          <input type="text" id="promptInput" class="form-control">
+        </div>
+        <div class="d-grid gap-2">
+          <button id="generateImageButton" class="btn btn-primary" onclick="handleGenerateImage()">Gerar Imagem</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <!-- Inclusão do JS do Bootstrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="js/main.js"></script>

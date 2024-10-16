@@ -1,11 +1,11 @@
 // Importações necessárias
 import { runGemini } from './src/gemini.cjs';
-import { generateImage} from './src/stableDiffusion.js';
+import { generateImage} from './src/stableDiffusion.mjs';
 import dotenv from 'dotenv/config';
 import { insertRecord } from './src/database.cjs';
 // Função principal para executar a geração e salvar o registro
 async function main() {
-    const prompt = await runGemini();
+    const prompt = await runGemini('Gere um prompt para a criação de uma thumb de um canal de finanças');
     const imageResult = await generateImage(prompt);
   
     if (imageResult && imageResult.returnImage) {
@@ -13,7 +13,7 @@ async function main() {
       const newRecord = {
         prompt,
         url: imageResult.returnImage[0].url, // Supondo que o retorno é um array de imagens
-        seed:0, 
+        seed:imageResult.params.seed, 
         negative_prompt:imageResult.params.negative_prompt, 
         randomize_seed:imageResult.params.randomize_seed, 
         width:imageResult.params.width, 

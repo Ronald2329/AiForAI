@@ -22,8 +22,8 @@ const {
   };
   
 async function runGemini(
-  systemInstruction="Você será uma IA de geração de prompt para criar imagens, para que posteriormente essas imagens virem vídeos animados",
-  prompt="Gere somente um prompt para criar somente alguma imagem relacionada ao ambiente acadêmico de uma faculdade de ciências da Computação"
+  prompt,
+  systemInstruction="Você será uma IA de geração de prompt para criar imagens, para que posteriormente essas imagens virem thumbs de vídeos no youtube"
 ) {
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
